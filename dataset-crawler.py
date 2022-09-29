@@ -1,28 +1,30 @@
 import pandas as pd
 
 import csv
-import time
 
 from tqdm import tqdm
-from datetime import datetime as dt
-from dateutil.relativedelta import relativedelta
 from selenium import webdriver
-from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as ec
 
 
 df = pd.read_csv("data/crawler/crawler-input.csv")
-games = df.golId
+games = df.golId.drop_duplicates().dropna().apply(int).tolist()
+processed_df = pd.read_csv("data/crawler/crawler-output.csv")
+processed_games = processed_df.golId.drop_duplicates().tolist()
+remaining_games = set(games) - set(processed_games)
 
 def getFormattedAction(img_src):
     actionMapping = {
+        'https://gol.gg/_img/drake-icon.png': 'dragon',
         'https://gol.gg/_img/chemtech-dragon.png': 'dragon',
         'https://gol.gg/_img/hextech-dragon.png': 'dragon',
         'https://gol.gg/_img/mountain-dragon.png': 'dragon',
         'https://gol.gg/_img/cloud-dragon.png': 'dragon',
+        'https://gol.gg/_img/ocean-dragon.png': 'dragon',
         'https://gol.gg/_img/fire-dragon.png': 'dragon',
+        'https://gol.gg/_img/elder-dragon.png': 'elder_dragon',
         'https://gol.gg/_img/nashor-icon.png': 'baron',
         'https://gol.gg/_img/herald-icon.png': 'herald',
         'https://gol.gg/_img/nexus-icon.png': 'nexus',
@@ -61,20 +63,24 @@ def getFormattedTarget(target_text):
 def processGames(game):
     
     if game != 'nan':
-
+        game = str(game)
         chrome_path = r'dependency/chromedriver'
         options = webdriver.ChromeOptions()
+        options.headless = True
+        user_agent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.50 Safari/537.36'
+        options.add_argument('window-size=1400,600')
+        options.add_argument(f'user-agent={user_agent}')
         driver = webdriver.Chrome(executable_path=chrome_path, options=options)
         driver.get(
             "https://gol.gg/game/stats/{}/page-timeline/".format(game))
 
         # waiting page load
+        msg = 'Tabela de eventos era esperada na partida {} e não foi encontrado.'.format(game)
         wait = WebDriverWait(driver, 10)
-        events_table = wait.until(ec.presence_of_element_located((By.CLASS_NAME, 'timeline')), message='Tabela de eventos era esperada na partida {} e não foi encontrado.'.format(game))
-        table_id = driver.find_element(By.CLASS_NAME, 'timeline')
-        rows = table_id.find_elements(By.TAG_NAME, "tr")
-        events = ['', '', '', '', '', '', '', '', '', '','', '', '', '', '', '', '', '', '', '','', '', '', '', '', '', '', '', '', '','', '', '', '', '', '', '', '']
-        event_counter = 0
+        events_table = wait.until(ec.presence_of_element_located((By.CLASS_NAME, 'timeline')), message=msg)        
+        rows = events_table.find_elements(By.TAG_NAME, "tr")
+        events = [game, '', '', '', '', '', '', '', '', '', '','', '', '', '', '', '', '', '', '', '','', '', '', '', '', '', '', '', '', '','', '', '', '', '', '', '', '']
+        event_counter = 1
 
         for index, row in enumerate(rows):            
 
@@ -114,7 +120,6 @@ def processGames(game):
                 result_str += formatted_target
 
             events[event_counter] = result_str
-            print(event_counter)
             event_counter += 1
 
         with open('data/crawler/crawler-output.csv', mode='a', newline="") as dataset:
@@ -122,6 +127,6 @@ def processGames(game):
             datasetWriter.writerow(events)
             
 
-for game in tqdm(games):
-    game = str(game)
+for game in tqdm(remaining_games):
+    game = int(game)
     processGames(game)
