@@ -17,6 +17,7 @@ remaining_games = set(games) - set(processed_games)
 
 def getFormattedAction(img_src):
     actionMapping = {
+        'https://gol.gg/_img/kill-icon.png': 'first_blood',
         'https://gol.gg/_img/drake-icon.png': 'dragon',
         'https://gol.gg/_img/chemtech-dragon.png': 'dragon',
         'https://gol.gg/_img/hextech-dragon.png': 'dragon',
@@ -81,6 +82,7 @@ def processGames(game):
         rows = events_table.find_elements(By.TAG_NAME, "tr")
         events = [game, '', '', '', '', '', '', '', '', '', '','', '', '', '', '', '', '', '', '', '','', '', '', '', '', '', '', '', '', '','', '', '', '', '', '', '', '']
         event_counter = 1
+        has_first_blood = False
 
         for index, row in enumerate(rows):            
 
@@ -99,7 +101,7 @@ def processGames(game):
 
             action_img = action_img[0]
             # skipping kills events
-            if 'kill-icon' in action_img.get_attribute("src"):
+            if 'kill-icon' in action_img.get_attribute("src") and has_first_blood:
                 continue
 
             
@@ -113,6 +115,10 @@ def processGames(game):
                 result_str += 'RED: '
 
             formatted_action = getFormattedAction(action_img.get_attribute("src"))
+
+            if(formatted_action == 'first_blood'):
+                has_first_blood = True
+
             if(formatted_action != 'need_target'):
                 result_str += formatted_action
             else:
