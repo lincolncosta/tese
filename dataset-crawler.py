@@ -80,7 +80,7 @@ def processGames(game):
         wait = WebDriverWait(driver, 10)
         events_table = wait.until(ec.presence_of_element_located((By.CLASS_NAME, 'timeline')), message=msg)        
         rows = events_table.find_elements(By.TAG_NAME, "tr")
-        events = [game, '', '', '', '', '', '', '', '', '', '','', '', '', '', '', '', '', '', '', '','', '', '', '', '', '', '', '', '', '','', '', '', '', '', '', '', '']
+        events = [game, '', '', '', '', '', '', '', '', '', '', '','', '', '', '', '', '', '', '', '', '','', '', '', '', '', '', '', '', '', '','', '', '', '', '', '', '', '', '', '', '', '', '', '']
         event_counter = 1
         has_first_blood = False
 
