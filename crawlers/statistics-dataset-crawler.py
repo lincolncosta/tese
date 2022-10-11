@@ -507,7 +507,8 @@ def getPlayerURL(playerName, role):
         'Miss': 'Miss (Letícia Porto)',
         'BuLLDoG': 'BuLLDoG (Lee Tae-young)',
         'Crownie': 'Crownshot',
-        'Broken Blade': 'BrokenBlade'
+        'Broken Blade': 'BrokenBlade',
+        'Meager': 'Syrpy'
     }
 
     if playerName in namesMapping:
