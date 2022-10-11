@@ -505,7 +505,9 @@ def getPlayerURL(playerName, role):
             'mid': 'Min (Lim Hyeong-min)'
         },
         'Miss': 'Miss (Letícia Porto)',
-        'BuLLDoG': 'BuLLDoG (Lee Tae-young)'
+        'BuLLDoG': 'BuLLDoG (Lee Tae-young)',
+        'Crownie': 'Crownshot',
+        'Broken Blade': 'BrokenBlade'
     }
 
     if playerName in namesMapping:
