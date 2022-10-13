@@ -367,7 +367,6 @@ def getPlayerURL(playerName, role):
         'Strange': {
             'mid': 'Strange (Cristopher Gonzalez)'
         },
-        'Syrpy': 'Meager',
         'baekho': {
             'bot': 'BaeKHo (Baek Seung-min)',
             'jng': 'Baekho (Hyun-woo Choe)'
@@ -404,14 +403,16 @@ def getPlayerURL(playerName, role):
         'Hoon': 'Hoon (Lee Jang-hoon)',
         'Typhoon': {
             'bot': 'Typhoon (Chen Dai-Feng)',
-            'jng': 'Typhoon (Tayfun Gümüş)'
+            'jng': 'Typhoon (Tayfun Gümüş)',
+            'mid': 'Typhoon (Chen Dai-Feng)'
         },
         'Drop': {
             'bot': 'Drop (Matheus Herdy)'
         },
         'Kick': 'Kick (João Rosas)',
         'Lionel': {
-            'sup': 'Lionel (Matthew Desa)'
+            'sup': 'Lionel (Matthew Desa)',
+            'bot': 'Lionel (Matthew Desa)'
         },
         'Fang': 'Fang (Ignacio Gutierrez)',
         'Pinky': 'Pinky (Oscar Gomez)',
@@ -508,7 +509,13 @@ def getPlayerURL(playerName, role):
         'BuLLDoG': 'BuLLDoG (Lee Tae-young)',
         'Crownie': 'Crownshot',
         'Broken Blade': 'BrokenBlade',
-        'Meager': 'Syrpy'
+        'Meager': 'Syrpy',
+        'Macko': 'Macko (Vicko Mihovilčević)',
+        'Yuki': {
+            'top': 'Yuki (Xue Chao)',
+            'sup': 'Yuki (Igor Kamiya)'
+        },
+        'choego': 'Choego (Damian Bajor)'
     }
 
     if playerName in namesMapping:
@@ -579,7 +586,6 @@ def crawlerPlayerInfos(playerName, playingChampion, startDate, endDate, game, ro
 def processGames(game):
 
     if isinstance(game, str) and processed_games.str.contains(str(game)).any() == False and events_crawled_games.str.contains(str(game)).any() == True:
-
         # GAME DATETIME
         endDate = dt.strptime(
             df[(df['gameid'] == game)].date.values[0], '%Y-%m-%d %H:%M:%S')
@@ -782,6 +788,7 @@ def processGames(game):
 
 
 df = pd.read_csv("../data/raw.csv")
+df = df.sort_values(by='gameid', ascending=False)
 df_champions = pd.read_csv('../data/champions.csv')
 games = df.gameid.drop_duplicates()
 
