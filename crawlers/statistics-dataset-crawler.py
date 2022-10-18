@@ -226,7 +226,7 @@ def getPlayerURL(playerName, role):
         'Steal': 'Steal (Mun Geon-yeong)',
         'Camanagozo': 'Camanagazo',
         'Hiro': 'Hiro (Nguyên Đại Hải)',
-        'Emperor': 'Emperor (Viktor Liptai)',
+        'Emperor': 'Emperor (Kim Jin-hyun)',
         'Kimi': 'Kimi (Cristian Aparicio)',
         'Trashy': 'Trashy (Alejo Rivero)',
         'Prodigy': 'Prodigy (Javier Juárez)',
@@ -238,6 +238,7 @@ def getPlayerURL(playerName, role):
         'Lexa': 'Lexa (Aleksa Ilić)',
         'Zerito': 'Zero (Tomas Colangelo)',
         'JackPoT': 'JackPoT (Park Jin-soo)',
+        'Jackpot': 'JackPoT (Park Jin-soo)',
         'Tokz': 'Tokz (Simon Hermansen)',
         'Tiger': 'Tiger (Alan Roger)',
         'Viktor': 'Viktor (Viktor Savčenko)',
@@ -412,7 +413,8 @@ def getPlayerURL(playerName, role):
         'Kick': 'Kick (João Rosas)',
         'Lionel': {
             'sup': 'Lionel (Matthew Desa)',
-            'bot': 'Lionel (Matthew Desa)'
+            'bot': 'Lionel (Matthew Desa)',
+            'jng': 'Lionel (Matthew Desa)',
         },
         'Fang': 'Fang (Ignacio Gutierrez)',
         'Pinky': 'Pinky (Oscar Gomez)',
@@ -515,7 +517,23 @@ def getPlayerURL(playerName, role):
             'top': 'Yuki (Xue Chao)',
             'sup': 'Yuki (Igor Kamiya)'
         },
-        'choego': 'Choego (Damian Bajor)'
+        'choego': 'Choego (Damian Bajor)',
+        'Rabbit': 'Rabbit (Emilios Zekia)',
+        'Amazing': 'Amazing (Maurice Stückenschneider)',
+        'vital': 'Vital',
+        'Haze': 'Haze (Afonso Maia)',
+        'Zen': 'Zen (Gabriel Pontes)',
+        'Pun1sher': 'Pun1sher (Konstantinos Katsikadakos)',
+        'HHNeverLucky': 'HawHaw',
+        'Apex': 'Apex (Hsieh Chia-Wei)',
+        'Lz': {
+            'top': 'Lz (Li Zhen)',
+            'bot': 'Lz (Yang Zi-Li)'
+        },
+        'Winnie': {
+            'jng': 'Winnie (Winston Herold)',
+            'sup': 'Winnie (Shen Tzu-Chen)'
+        }
     }
 
     if playerName in namesMapping:
@@ -788,7 +806,7 @@ def processGames(game):
 
 
 df = pd.read_csv("../data/raw.csv")
-df = df.sort_values(by='gameid', ascending=False)
+# df = df.sort_values(by='gameid', ascending=False)
 df_champions = pd.read_csv('../data/champions.csv')
 games = df.gameid.drop_duplicates()
 

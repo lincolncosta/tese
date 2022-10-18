@@ -9,9 +9,9 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as ec
 
 
-df = pd.read_csv("data/crawler/crawler-input.csv")
+df = pd.read_csv("../data/crawler/crawler-input.csv")
 games = df.golId.drop_duplicates().dropna().apply(int).tolist()
-processed_df = pd.read_csv("data/crawler/crawler-output.csv")
+processed_df = pd.read_csv("../data/crawler/crawler-output.csv")
 processed_games = processed_df.golId.drop_duplicates().tolist()
 remaining_games = set(games) - set(processed_games)
 
@@ -65,7 +65,7 @@ def processGames(game):
     
     if game != 'nan':
         game = str(game)
-        chrome_path = r'dependency/chromedriver'
+        chrome_path = r'../dependency/chromedriver'
         options = webdriver.ChromeOptions()
         options.headless = True
         user_agent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.50 Safari/537.36'
@@ -128,7 +128,7 @@ def processGames(game):
             events[event_counter] = result_str
             event_counter += 1
 
-        with open('data/crawler/crawler-output.csv', mode='a', newline="") as dataset:
+        with open('../data/crawler/crawler-output.csv', mode='a', newline="") as dataset:
             datasetWriter = csv.writer(dataset, delimiter=',')
             datasetWriter.writerow(events)
             
