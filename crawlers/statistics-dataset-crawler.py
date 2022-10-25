@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 
 import csv
 import time
@@ -533,7 +534,9 @@ def getPlayerURL(playerName, role):
         'Winnie': {
             'jng': 'Winnie (Winston Herold)',
             'sup': 'Winnie (Shen Tzu-Chen)'
-        }
+        },
+        'Primo': 'Primo (Shion Tsunasawa)',
+        'Speedobear': 'Teddy (Teodor Milošević)'
     }
 
     if playerName in namesMapping:
@@ -602,225 +605,235 @@ def crawlerPlayerInfos(playerName, playingChampion, startDate, endDate, game, ro
 
 
 def processGames(game):
+    
+    # GAME DATETIME
+    endDate = dt.strptime(
+        df[(df['gameid'] == game)].date.values[0], '%Y-%m-%d %H:%M:%S')
+    # startDate = endDate - relativedelta(months=1)
+    formatedEndDate = "{}-{:02d}-{:02d}".format(
+        endDate.year, endDate.month, endDate.day - 1)
+    formatedStartDate = ''
+    # formatedStartDate = "{:02d}/{:02d}/{}".format(
+    # startDate.day - 1, startDate.month, startDate.year)
 
-    if isinstance(game, str) and processed_games.str.contains(str(game)).any() == False and events_crawled_games.str.contains(str(game)).any() == True:
-        # GAME DATETIME
-        endDate = dt.strptime(
-            df[(df['gameid'] == game)].date.values[0], '%Y-%m-%d %H:%M:%S')
-        # startDate = endDate - relativedelta(months=1)
-        formatedEndDate = "{}-{:02d}-{:02d}".format(
-            endDate.year, endDate.month, endDate.day - 1)
-        formatedStartDate = ''
-        # formatedStartDate = "{:02d}/{:02d}/{}".format(
-        # startDate.day - 1, startDate.month, startDate.year)
-
-        # BLUE TEAM
-        blueTop = df[(df['gameid'] == game) & (df['side'] == 'Blue')
-                     & (df['position'] == 'top')].champion.values[0]
-        blueTopPlayer = df[(df['gameid'] == game) & (df['side'] == 'Blue') & (
-            df['position'] == 'top')].playername.values[0]
-        if (blueTopPlayer != 'unknown player'):
-            crawler = crawlerPlayerInfos(
-                blueTopPlayer, blueTop, formatedStartDate, formatedEndDate, game, 'top')
-            blueTop = int(
-                df_champions.loc[df_champions['id'] == blueTop]['key'])
-            if (crawler):
-                blueTopGP = crawler[0]
-                blueTopWR = crawler[1]
-                blueTopKDA = crawler[2]
-            else:
-                return
-        else:
-            return
-
-        blueJungle = df[(df['gameid'] == game) & (df['side'] == 'Blue') & (
-            df['position'] == 'jng')].champion.values[0]
-        blueJunglePlayer = df[(df['gameid'] == game) & (
-            df['side'] == 'Blue') & (df['position'] == 'jng')].playername.values[0]
-        if (blueJunglePlayer != 'unknown player'):
-            crawler = crawlerPlayerInfos(
-                blueJunglePlayer, blueJungle, formatedStartDate, formatedEndDate, game, 'jng')
-            blueJungle = int(
-                df_champions.loc[df_champions['id'] == blueJungle]['key'])
-            if (crawler):
-                blueJungleGP = crawler[0]
-                blueJungleWR = crawler[1]
-                blueJungleKDA = crawler[2]
-            else:
-                return
-        else:
-            return
-
-        blueMid = df[(df['gameid'] == game) & (df['side'] == 'Blue')
-                     & (df['position'] == 'mid')].champion.values[0]
-        blueMidPlayer = df[(df['gameid'] == game) & (df['side'] == 'Blue') & (
-            df['position'] == 'mid')].playername.values[0]
-        if (blueMidPlayer != 'unknown player'):
-            crawler = crawlerPlayerInfos(
-                blueMidPlayer, blueMid, formatedStartDate, formatedEndDate, game, 'mid')
-            blueMid = int(
-                df_champions.loc[df_champions['id'] == blueMid]['key'])
-            if (crawler):
-                blueMidGP = crawler[0]
-                blueMidWR = crawler[1]
-                blueMidKDA = crawler[2]
-            else:
-                return
-        else:
-            return
-
-        blueCarry = df[(df['gameid'] == game) & (df['side'] == 'Blue') & (
-            df['position'] == 'bot')].champion.values[0]
-        blueCarryPlayer = df[(df['gameid'] == game) & (
-            df['side'] == 'Blue') & (df['position'] == 'bot')].playername.values[0]
-        if (blueCarryPlayer != 'unknown player'):
-            crawler = crawlerPlayerInfos(
-                blueCarryPlayer, blueCarry, formatedStartDate, formatedEndDate, game, 'bot')
-            blueCarry = int(
-                df_champions.loc[df_champions['id'] == blueCarry]['key'])
-            if (crawler):
-                blueCarryGP = crawler[0]
-                blueCarryWR = crawler[1]
-                blueCarryKDA = crawler[2]
-            else:
-                return
-        else:
-            return
-
-        blueSupp = df[(df['gameid'] == game) & (df['side'] == 'Blue') & (
-            df['position'] == 'sup')].champion.values[0]
-        blueSuppPlayer = df[(df['gameid'] == game) & (
-            df['side'] == 'Blue') & (df['position'] == 'sup')].playername.values[0]
-        if (blueSuppPlayer != 'unknown player'):
-            crawler = crawlerPlayerInfos(
-                blueSuppPlayer, blueSupp, formatedStartDate, formatedEndDate, game, 'sup')
-            blueSupp = int(
-                df_champions.loc[df_champions['id'] == blueSupp]['key'])
-            if (crawler):
-                blueSuppGP = crawler[0]
-                blueSuppWR = crawler[1]
-                blueSuppKDA = crawler[2]
-            else:
-                return
-        else:
-            return
-
-        # RED TEAM
-        redTop = df[(df['gameid'] == game) & (df['side'] == 'Red')
+    # BLUE TEAM
+    blueTop = df[(df['gameid'] == game) & (df['side'] == 'Blue')
                     & (df['position'] == 'top')].champion.values[0]
-        redTopPlayer = df[(df['gameid'] == game) & (df['side'] == 'Red') & (
-            df['position'] == 'top')].playername.values[0]
-        if (redTopPlayer != 'unknown player'):
-            crawler = crawlerPlayerInfos(
-                redTopPlayer, redTop, formatedStartDate, formatedEndDate, game, 'top')
-            redTop = int(df_champions.loc[df_champions['id'] == redTop]['key'])
-            if (crawler):
-                redTopGP = crawler[0]
-                redTopWR = crawler[1]
-                redTopKDA = crawler[2]
-            else:
-                return
+    blueTopPlayer = df[(df['gameid'] == game) & (df['side'] == 'Blue') & (
+        df['position'] == 'top')].playername.values[0]
+    if (blueTopPlayer != 'unknown player'):
+        crawler = crawlerPlayerInfos(
+            blueTopPlayer, blueTop, formatedStartDate, formatedEndDate, game, 'top')
+        blueTop = int(
+            df_champions.loc[df_champions['id'] == blueTop]['key'])
+        if (crawler):
+            blueTopGP = crawler[0]
+            blueTopWR = crawler[1]
+            blueTopKDA = crawler[2]
         else:
             return
+    else:
+        return
 
-        redJungle = df[(df['gameid'] == game) & (df['side'] == 'Red') & (
-            df['position'] == 'jng')].champion.values[0]
-        redJunglePlayer = df[(df['gameid'] == game) & (
-            df['side'] == 'Red') & (df['position'] == 'jng')].playername.values[0]
-        if (redJunglePlayer != 'unknown player'):
-            crawler = crawlerPlayerInfos(
-                redJunglePlayer, redJungle, formatedStartDate, formatedEndDate, game, 'jng')
-            redJungle = int(
-                df_champions.loc[df_champions['id'] == redJungle]['key'])
-            if (crawler):
-                redJungleGP = crawler[0]
-                redJungleWR = crawler[1]
-                redJungleKDA = crawler[2]
-            else:
-                return
+    blueJungle = df[(df['gameid'] == game) & (df['side'] == 'Blue') & (
+        df['position'] == 'jng')].champion.values[0]
+    blueJunglePlayer = df[(df['gameid'] == game) & (
+        df['side'] == 'Blue') & (df['position'] == 'jng')].playername.values[0]
+    if (blueJunglePlayer != 'unknown player'):
+        crawler = crawlerPlayerInfos(
+            blueJunglePlayer, blueJungle, formatedStartDate, formatedEndDate, game, 'jng')
+        blueJungle = int(
+            df_champions.loc[df_champions['id'] == blueJungle]['key'])
+        if (crawler):
+            blueJungleGP = crawler[0]
+            blueJungleWR = crawler[1]
+            blueJungleKDA = crawler[2]
         else:
             return
+    else:
+        return
 
-        redMid = df[(df['gameid'] == game) & (df['side'] == 'Red')
+    blueMid = df[(df['gameid'] == game) & (df['side'] == 'Blue')
                     & (df['position'] == 'mid')].champion.values[0]
-        redMidPlayer = df[(df['gameid'] == game) & (df['side'] == 'Red') & (
-            df['position'] == 'mid')].playername.values[0]
-        if (redMidPlayer != 'unknown player'):
-            crawler = crawlerPlayerInfos(
-                redMidPlayer, redMid, formatedStartDate, formatedEndDate, game, 'mid')
-            redMid = int(df_champions.loc[df_champions['id'] == redMid]['key'])
-            if (crawler):
-                redMidGP = crawler[0]
-                redMidWR = crawler[1]
-                redMidKDA = crawler[2]
-            else:
-                return
+    blueMidPlayer = df[(df['gameid'] == game) & (df['side'] == 'Blue') & (
+        df['position'] == 'mid')].playername.values[0]
+    if (blueMidPlayer != 'unknown player'):
+        crawler = crawlerPlayerInfos(
+            blueMidPlayer, blueMid, formatedStartDate, formatedEndDate, game, 'mid')
+        blueMid = int(
+            df_champions.loc[df_champions['id'] == blueMid]['key'])
+        if (crawler):
+            blueMidGP = crawler[0]
+            blueMidWR = crawler[1]
+            blueMidKDA = crawler[2]
         else:
             return
+    else:
+        return
 
-        redCarry = df[(df['gameid'] == game) & (df['side'] == 'Red') & (
-            df['position'] == 'bot')].champion.values[0]
-        redCarryPlayer = df[(df['gameid'] == game) & (
-            df['side'] == 'Red') & (df['position'] == 'bot')].playername.values[0]
-        if (redCarryPlayer != 'unknown player'):
-            crawler = crawlerPlayerInfos(
-                redCarryPlayer, redCarry, formatedStartDate, formatedEndDate, game, 'bot')
-            redCarry = int(
-                df_champions.loc[df_champions['id'] == redCarry]['key'])
-            if (crawler):
-                redCarryGP = crawler[0]
-                redCarryWR = crawler[1]
-                redCarryKDA = crawler[2]
-            else:
-                return
+    blueCarry = df[(df['gameid'] == game) & (df['side'] == 'Blue') & (
+        df['position'] == 'bot')].champion.values[0]
+    blueCarryPlayer = df[(df['gameid'] == game) & (
+        df['side'] == 'Blue') & (df['position'] == 'bot')].playername.values[0]
+    if (blueCarryPlayer != 'unknown player'):
+        crawler = crawlerPlayerInfos(
+            blueCarryPlayer, blueCarry, formatedStartDate, formatedEndDate, game, 'bot')
+        blueCarry = int(
+            df_champions.loc[df_champions['id'] == blueCarry]['key'])
+        if (crawler):
+            blueCarryGP = crawler[0]
+            blueCarryWR = crawler[1]
+            blueCarryKDA = crawler[2]
         else:
             return
+    else:
+        return
 
-        redSupp = df[(df['gameid'] == game) & (df['side'] == 'Red')
-                     & (df['position'] == 'sup')].champion.values[0]
-        redSuppPlayer = df[(df['gameid'] == game) & (df['side'] == 'Red') & (
-            df['position'] == 'sup')].playername.values[0]
-        if (redSuppPlayer != 'unknown player'):
-            crawler = crawlerPlayerInfos(
-                redSuppPlayer, redSupp, formatedStartDate, formatedEndDate, game, 'sup')
-            redSupp = int(
-                df_champions.loc[df_champions['id'] == redSupp]['key'])
-            if (crawler):
-                redSuppGP = crawler[0]
-                redSuppWR = crawler[1]
-                redSuppKDA = crawler[2]
-            else:
-                return
+    blueSupp = df[(df['gameid'] == game) & (df['side'] == 'Blue') & (
+        df['position'] == 'sup')].champion.values[0]
+    blueSuppPlayer = df[(df['gameid'] == game) & (
+        df['side'] == 'Blue') & (df['position'] == 'sup')].playername.values[0]
+    if (blueSuppPlayer != 'unknown player'):
+        crawler = crawlerPlayerInfos(
+            blueSuppPlayer, blueSupp, formatedStartDate, formatedEndDate, game, 'sup')
+        blueSupp = int(
+            df_champions.loc[df_champions['id'] == blueSupp]['key'])
+        if (crawler):
+            blueSuppGP = crawler[0]
+            blueSuppWR = crawler[1]
+            blueSuppKDA = crawler[2]
         else:
             return
+    else:
+        return
 
-        # RESULT
-        result = df[(df['gameid'] == game) & (df['side'] == 'Red')
-                    & (df['position'] == 'sup')].result.values[0]
+    # RED TEAM
+    redTop = df[(df['gameid'] == game) & (df['side'] == 'Red')
+                & (df['position'] == 'top')].champion.values[0]
+    redTopPlayer = df[(df['gameid'] == game) & (df['side'] == 'Red') & (
+        df['position'] == 'top')].playername.values[0]
+    if (redTopPlayer != 'unknown player'):
+        crawler = crawlerPlayerInfos(
+            redTopPlayer, redTop, formatedStartDate, formatedEndDate, game, 'top')
+        redTop = int(df_champions.loc[df_champions['id'] == redTop]['key'])
+        if (crawler):
+            redTopGP = crawler[0]
+            redTopWR = crawler[1]
+            redTopKDA = crawler[2]
+        else:
+            return
+    else:
+        return
 
-        # WRITING TO DATASET FILE
-        with open('../data/crawler/players_statistics.csv', mode='a', newline="") as dataset2021:
-            datasetWriter = csv.writer(dataset2021, delimiter=',')
-            datasetWriter.writerow([game, blueTopGP, blueTopWR, blueTopKDA, blueJungleGP, blueJungleWR, blueJungleKDA, blueMidGP, blueMidWR, blueMidKDA, blueCarryGP, blueCarryWR, blueCarryKDA, blueSuppGP, blueSuppWR,
-                                    blueSuppKDA, redTopGP, redTopWR, redTopKDA, redJungleGP, redJungleWR, redJungleKDA, redMidGP, redMidWR, redMidKDA, redCarryGP, redCarryWR, redCarryKDA, redSuppGP, redSuppWR, redSuppKDA, result])
+    redJungle = df[(df['gameid'] == game) & (df['side'] == 'Red') & (
+        df['position'] == 'jng')].champion.values[0]
+    redJunglePlayer = df[(df['gameid'] == game) & (
+        df['side'] == 'Red') & (df['position'] == 'jng')].playername.values[0]
+    if (redJunglePlayer != 'unknown player'):
+        crawler = crawlerPlayerInfos(
+            redJunglePlayer, redJungle, formatedStartDate, formatedEndDate, game, 'jng')
+        redJungle = int(
+            df_champions.loc[df_champions['id'] == redJungle]['key'])
+        if (crawler):
+            redJungleGP = crawler[0]
+            redJungleWR = crawler[1]
+            redJungleKDA = crawler[2]
+        else:
+            return
+    else:
+        return
 
+    redMid = df[(df['gameid'] == game) & (df['side'] == 'Red')
+                & (df['position'] == 'mid')].champion.values[0]
+    redMidPlayer = df[(df['gameid'] == game) & (df['side'] == 'Red') & (
+        df['position'] == 'mid')].playername.values[0]
+    if (redMidPlayer != 'unknown player'):
+        crawler = crawlerPlayerInfos(
+            redMidPlayer, redMid, formatedStartDate, formatedEndDate, game, 'mid')
+        redMid = int(df_champions.loc[df_champions['id'] == redMid]['key'])
+        if (crawler):
+            redMidGP = crawler[0]
+            redMidWR = crawler[1]
+            redMidKDA = crawler[2]
+        else:
+            return
+    else:
+        return
+
+    redCarry = df[(df['gameid'] == game) & (df['side'] == 'Red') & (
+        df['position'] == 'bot')].champion.values[0]
+    redCarryPlayer = df[(df['gameid'] == game) & (
+        df['side'] == 'Red') & (df['position'] == 'bot')].playername.values[0]
+    if (redCarryPlayer != 'unknown player'):
+        crawler = crawlerPlayerInfos(
+            redCarryPlayer, redCarry, formatedStartDate, formatedEndDate, game, 'bot')
+        redCarry = int(
+            df_champions.loc[df_champions['id'] == redCarry]['key'])
+        if (crawler):
+            redCarryGP = crawler[0]
+            redCarryWR = crawler[1]
+            redCarryKDA = crawler[2]
+        else:
+            return
+    else:
+        return
+
+    redSupp = df[(df['gameid'] == game) & (df['side'] == 'Red')
+                    & (df['position'] == 'sup')].champion.values[0]
+    redSuppPlayer = df[(df['gameid'] == game) & (df['side'] == 'Red') & (
+        df['position'] == 'sup')].playername.values[0]
+    if (redSuppPlayer != 'unknown player'):
+        crawler = crawlerPlayerInfos(
+            redSuppPlayer, redSupp, formatedStartDate, formatedEndDate, game, 'sup')
+        redSupp = int(
+            df_champions.loc[df_champions['id'] == redSupp]['key'])
+        if (crawler):
+            redSuppGP = crawler[0]
+            redSuppWR = crawler[1]
+            redSuppKDA = crawler[2]
+        else:
+            return
+    else:
+        return
+
+    # RESULT
+    result = df[(df['gameid'] == game) & (df['side'] == 'Blue')
+                & (df['position'] == 'sup')].result.values[0]
+
+    # WRITING TO DATASET FILE
+    with open('../data/crawler/players_statistics.csv', mode='a', newline="") as dataset2021:
+        datasetWriter = csv.writer(dataset2021, delimiter=',')
+        datasetWriter.writerow([game, blueTopGP, blueTopWR, blueTopKDA, blueJungleGP, blueJungleWR, blueJungleKDA, blueMidGP, blueMidWR, blueMidKDA, blueCarryGP, blueCarryWR, blueCarryKDA, blueSuppGP, blueSuppWR,
+                                blueSuppKDA, redTopGP, redTopWR, redTopKDA, redJungleGP, redJungleWR, redJungleKDA, redMidGP, redMidWR, redMidKDA, redCarryGP, redCarryWR, redCarryKDA, redSuppGP, redSuppWR, redSuppKDA, result])
+
+def diff(list1, list2):
+    c = set(list1).union(set(list2))  # or c = set(list1) | set(list2)
+    d = set(list1).intersection(set(list2))  # or d = set(list1) & set(list2)
+    return list(c - d)
 
 df = pd.read_csv("../data/raw.csv")
-# df = df.sort_values(by='gameid', ascending=False)
 df_champions = pd.read_csv('../data/champions.csv')
-games = df.gameid.drop_duplicates()
+statistics_df = pd.read_csv("../data/crawler/unified-events-statistics.csv")
+events_output_df = pd.read_csv("../data/crawler/crawler-output.csv")
+events_input_df = pd.read_csv("../data/crawler/crawler-input.csv")
 
-# Partidas onde o histórico dos jogadores já foi scrappeado
-processed_df = pd.read_csv("../data/crawler/players_statistics.csv")
-processed_games = processed_df.game.drop_duplicates()
+processedGameIds = statistics_df.game.drop_duplicates().to_list()
+unprocessedGameIds = []
 
-# Partidas onde os eventos já foram extraídos
-events_crawled_df = pd.read_csv("../data/crawler/crawler-input.csv")
-events_crawled_games = events_crawled_df[events_crawled_df.golId.notnull()].game.drop_duplicates()
+for index, row in events_output_df.iterrows():
+    golId = row['golId']
+
+    if np.isfinite(golId):
+        filtered_df = events_input_df.loc[events_input_df['golId'] == golId]
+        game = filtered_df['game'].values[0]
+        unprocessedGameIds.append(game)
+
+gamesToProcess = diff(processedGameIds, unprocessedGameIds)
 
 header = 'game,blueTopGP,blueTopWR,blueTopKDA,blueJungleGP,blueJungleWR,blueJungleKDA,blueMidGP,blueMidWR,blueMidKDA,blueADCGP,blueADCWR,blueADCKDA,blueSupportGP,blueSupportWR,blueSupportKDA,redTopGP,redTopWR,redTopKDA,redJungleGP,redJungleWR,redJungleKDA,redMidGP,redMidWR,redMidKDA,redAdcGP,redAdcWR,redAdcKDA,redSupportGP,redSupportWR,redSupportKDA,result\n'
 with open('../data/crawler/players_statistics.csv', mode='a') as dataset:
     dataset.write(header)
 
-for game in tqdm(games):
-    processGames(game)
+for game in tqdm(gamesToProcess):
+    if isinstance(game, str):
+        processGames(game)
