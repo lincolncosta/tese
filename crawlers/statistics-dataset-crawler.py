@@ -536,7 +536,15 @@ def getPlayerURL(playerName, role):
             'sup': 'Winnie (Shen Tzu-Chen)'
         },
         'Primo': 'Primo (Shion Tsunasawa)',
-        'Speedobear': 'Teddy (Teodor Milošević)'
+        'Speedobear': 'Teddy (Teodor Milošević)',
+        'Piero': 'Piero (Kim Jung-hun)',
+        'Courage': 'Courage (Jeon Hyun-min)',
+        'Fisher': 'Fisher (Lee Jeong-tae)',
+        'Ravenous': 'Ravenous (Berk Er)',
+        'Goliath': 'Goliath (Kim Hyo-min)',
+        'Sherlock': 'Sherlock (Song Jun-hee)',
+        'Loki': 'Loki (Lee Sang-min)',
+        'Septico': 'Septico1'
     }
 
     if playerName in namesMapping:
