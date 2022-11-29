@@ -129,7 +129,7 @@ def getPlayerURL(playerName, role):
         'FIESTA': 'FIESTA (An Hyeon-seo)',
         'LOCKIE': 'Tsigas',
         'Deluxe': 'Deluxe (Klemen Papež)',
-        'Hades': 'Hades (Maik Jonker)',
+        'Hades': 'Hadess',
         'Nyx': 'Nyx (Óscar Ruiz Vargas)',
         'Marky': 'Marky (Pedro José Serrano)',
         'Sharp': 'Sharp (Anders Lilleengen)',
@@ -171,7 +171,8 @@ def getPlayerURL(playerName, role):
         'Puff': 'Puff (Ding Wang)',
         'Ackerman': 'Ackerman (Gabriel Aparicio)',
         'Pancake': 'Pancake (Manuel Scala)',
-        'Sh4dowUS': 'Sh4dow us',
+        'Sh4dowUS': 'ShadowUS',
+        'Sh4dow us': 'ShadowUS',
         'Artemis': 'Artemis (Trần Quốc Hưng)',
         'BOSS': 'BOSS (Vladislav Fomin)',
         'Spooky': 'Spooky (Miroslav Gochev)',
@@ -544,7 +545,9 @@ def getPlayerURL(playerName, role):
         'Goliath': 'Goliath (Kim Hyo-min)',
         'Sherlock': 'Sherlock (Song Jun-hee)',
         'Loki': 'Loki (Lee Sang-min)',
-        'Septico': 'Septico1'
+        'Septico': 'Septico1',
+        'Clarence': 'Clarence (Cantoursna An)',
+        'kingggggg': 'King (Luka Kralj)'
     }
 
     if playerName in namesMapping:
@@ -577,7 +580,7 @@ def crawlerPlayerInfos(playerName, playingChampion, startDate, endDate, game, ro
     try:
         start_date_input = wait.until(ec.presence_of_element_located(
             (By.XPATH, '//*[@id="start_date"]')), message='Campo "Start Date" era esperado na busca do jogador {} e não foi encontrado.'.format(playerName))
-        # start_date_input.send_keys(startDate)
+        start_date_input.send_keys(startDate)
     except TimeoutException as ex:
         with open('incorrect-names.txt', 'a', encoding='utf-8') as f:
             f.write("{} - {}\n".format(playerName, game))
@@ -617,12 +620,11 @@ def processGames(game):
     # GAME DATETIME
     endDate = dt.strptime(
         df[(df['gameid'] == game)].date.values[0], '%Y-%m-%d %H:%M:%S')
-    # startDate = endDate - relativedelta(months=1)
+    startDate = endDate - relativedelta(months=6)    
     formatedEndDate = "{}-{:02d}-{:02d}".format(
         endDate.year, endDate.month, endDate.day - 1)
-    formatedStartDate = ''
-    # formatedStartDate = "{:02d}/{:02d}/{}".format(
-    # startDate.day - 1, startDate.month, startDate.year)
+    formatedStartDate = ''    
+    formatedStartDate = "{}-{:02d}-{:02d}".format(startDate.year, startDate.month, startDate.day - 1)
 
     # BLUE TEAM
     blueTop = df[(df['gameid'] == game) & (df['side'] == 'Blue')
@@ -821,7 +823,7 @@ def diff(list1, list2):
 
 df = pd.read_csv("../data/raw.csv")
 df_champions = pd.read_csv('../data/champions.csv')
-statistics_df = pd.read_csv("../data/crawler/unified-events-statistics.csv")
+statistics_df = pd.read_csv("../data/crawler/players_statistics.csv")
 events_output_df = pd.read_csv("../data/crawler/crawler-output.csv")
 events_input_df = pd.read_csv("../data/crawler/crawler-input.csv")
 
