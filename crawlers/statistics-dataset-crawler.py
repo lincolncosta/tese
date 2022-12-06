@@ -3,6 +3,7 @@ import numpy as np
 
 import csv
 import time
+import threading
 
 from tqdm import tqdm
 from datetime import datetime as dt
@@ -12,6 +13,8 @@ from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as ec
+
+from concurrent.futures import ThreadPoolExecutor
 
 
 def getPlayerURL(playerName, role):
@@ -594,7 +597,8 @@ def crawlerPlayerInfos(playerName, playingChampion, startDate, endDate, game, ro
     start_date_input.send_keys(endDate)
 
     # Aguardando carregamento da página e exibição dos resultados
-    time.sleep(5)
+    table_header = wait.until(ec.presence_of_element_located(
+        (By.XPATH, "//*[name()='svg' and @data-icon='arrows-alt-v']")), message='A tabela de campeões era esperada pro jogador {} e não foi encontrada.'.format(playerName))
 
     if (len(driver.find_elements(by=By.XPATH, value="//*[text()=\"{}\"]/following::div/following::div".format(playingChampion))) != 0):
         # Obtendo valores de GP, W% e KDA
@@ -685,7 +689,7 @@ def processGames(game):
         df['position'] == 'bot')].champion.values[0]
     blueCarryPlayer = df[(df['gameid'] == game) & (
         df['side'] == 'Blue') & (df['position'] == 'bot')].playername.values[0]
-    if (blueCarryPlayer != 'unknown player'):
+    if (blueCarryPlayer != 'unknown player' and blueCarryPlayer != 'Deadly'):
         crawler = crawlerPlayerInfos(
             blueCarryPlayer, blueCarry, formatedStartDate, formatedEndDate, game, 'bot')
         blueCarry = int(
@@ -774,7 +778,7 @@ def processGames(game):
         df['position'] == 'bot')].champion.values[0]
     redCarryPlayer = df[(df['gameid'] == game) & (
         df['side'] == 'Red') & (df['position'] == 'bot')].playername.values[0]
-    if (redCarryPlayer != 'unknown player'):
+    if (redCarryPlayer != 'unknown player' and blueCarryPlayer != 'Deadly'):
         crawler = crawlerPlayerInfos(
             redCarryPlayer, redCarry, formatedStartDate, formatedEndDate, game, 'bot')
         redCarry = int(
@@ -844,6 +848,11 @@ header = 'game,blueTopGP,blueTopWR,blueTopKDA,blueJungleGP,blueJungleWR,blueJung
 with open('../data/crawler/players_statistics.csv', mode='a') as dataset:
     dataset.write(header)
 
-for game in tqdm(gamesToProcess):
-    if isinstance(game, str):
-        processGames(game)
+def set_up_threads(gamesToProcess):
+    with ThreadPoolExecutor(max_workers=2) as executor:
+        return executor.map(processGames,    
+                            gamesToProcess,
+                            timeout = 60)
+
+if __name__ == "__main__":
+    set_up_threads(gamesToProcess)
