@@ -127,7 +127,7 @@ def getPlayerURL(playerName, role):
         'Noah': 'Noah (Oh Hyeon-taek)',
         'Thanatos': 'Thanatos (Park Seung-gyu)',
         'Storm': 'Storm (Lee Jae-dong)',
-        'Valkyrie': 'Valkyrie (Ko Joon-yeong)',
+        'Valkyrie': 'Valkyrie (Ko Joon-young)',
         'Dream': 'Dream (Tan Wen-Xiang)',
         'FIESTA': 'FIESTA (An Hyeon-seo)',
         'LOCKIE': 'Tsigas',
@@ -150,8 +150,10 @@ def getPlayerURL(playerName, role):
         'Tyrin': 'Tyrin (William Portugal)',
         'Royal': 'Royal (Alexandru Mihai Pricu)',
         'Dioge': 'Dioge (Diogenes Barbosa)',
-        'Flare': 'Flare (Park Sang-gyu)',
-        'flare': 'Flare (Luiz Felipe Lobo)',
+        'Flare': {
+            'jng': 'Flare (Park Sang-gyu)',
+            'bot': 'Flare (Luiz Felipe Lobo)'
+        },
         'Prime': 'Prime (Olivier Payet)',
         'asta': 'Asta (Wyllian Adriano)',
         'Bounty': 'Bounty',
@@ -186,7 +188,7 @@ def getPlayerURL(playerName, role):
         'Taki': 'Taki (Đinh Anh Tài)',
         'Style': {
             'jng': 'Style (Ignacio Pezoa)',
-            'bot': 'Style (Nguyễn Hoàng Sơn)'
+            'bot': 'Sty1e'
         },
         'Maple': 'Maple (Huang Yi-Tang)',
         'Koala': {
@@ -248,7 +250,7 @@ def getPlayerURL(playerName, role):
         'Tiger': 'Tiger (Alan Roger)',
         'Viktor': 'Viktor (Viktor Savčenko)',
         'Destiny': 'Destiny (Mitchell Shaw)',
-        'Frost': 'Frost (Juan Pablo Díaz)',
+        'Frost': 'Frost (Mátyus Mátyás)',
         'Smurf': 'Smurf (Dmitri Ivanov)',
         'Prince': 'Prince (Lee Chae-hwan)',
         'Maxim': 'Maxim (Maxim Tarasov)',
@@ -325,7 +327,7 @@ def getPlayerURL(playerName, role):
             'sup': 'Zest (Hsieh Ming-Hsuan)'
         },
         'Lucid': 'Lucid (Choi Yong-hyeok)',
-        'Seonbi': 'Seonbi (Koo Gwan-mo)',
+        'Seonbi': 'Seonbi (Koo Kwan-mo)',
         'Noodle': 'Noodle (Kim Kroon)',
         'Winner': 'Winner (Woo Joo-sung)',
         'MC': 'MC (Mohammed Chinoune)',
@@ -474,7 +476,7 @@ def getPlayerURL(playerName, role):
         'eXyu': 'EXyu',
         'Quiet': {
             'bot': 'Quiet (Tang Yong)',
-            'top': 'Quiet (Lin Wei-Zhe)'
+            'top': 'Quiet (Lin Wei Zhe)'
         },
         'Shin': 'Shin (Kirill Shurkin)',
         'Silk': 'Silk (Ivan Gantsyuk)',
@@ -550,7 +552,71 @@ def getPlayerURL(playerName, role):
         'Loki': 'Loki (Lee Sang-min)',
         'Septico': 'Septico1',
         'Clarence': 'Clarence (Cantoursna An)',
-        'kingggggg': 'King (Luka Kralj)'
+        'kingggggg': 'King (Luka Kralj)',
+        'Piglet': 'Piglet (Reuben Salb)',
+        'Cape': 'Cape (Bedirhan Çalişkan)',
+        'Inca': {
+            'top': 'Inca (Yunus Emre Göral)'
+        },
+        'Sacrifice': {
+            'jng': 'Sacrifice (Alex Zach)'
+        },
+        'Revo': {
+            'top': 'Revo (Coryan Cooper)'
+        },
+        'Shogun': {
+            'bot': 'Shogun (Nguyễn Văn Huy)'
+        },
+        'SeNBon': {
+            'mid': 'SeNBon (Wu Si-Yu)'
+        },
+        'Practice': 'Practice (Ömer Türgüt)',
+        'Drake': {
+            'jng': 'Drake (Luciano Paes)'
+        },
+        'Ruby': 'Ruby (Lee Sol-min)',
+        'Bong': 'Bong (Cho Bo-woong)',
+        'Tatu': 'Tatu (Pedro Seixas)',
+        'many': 'Many (Kuba Tylman)',
+        'Kanna': {
+            'mid': 'Kanna',
+            'jng': 'Kanna (Szymon Kawęcki)'
+        },
+        'pawp': 'Pawp',
+        'Fred': {
+            'mid': 'Fred (Frederico Galvão)',
+            'bot': 'Fred (Frederik Jensen)'
+        },
+        'Fallen': 'Fallen (Viktor Kordanovski)',
+        'Sad': 'Sad (Ibrahim El Sayed)',
+        'Promise': {
+            'top': 'Promise (Leonardo Braga)',
+            'bot': 'Promise (Daniel Kovařík)'
+        },
+        'Forest': 'Forest (Lee Hyeon-seo)',
+        'Penguin': 'Penguin (Nguyễn Đăng Khoa)',
+        'Lucky': {
+            'top': 'Lucky (Tong-He Zhang)',
+            'sup': 'Lucky (Luca Santos)',
+            'bot': 'Lucky (Alejandro Ko)'
+        },
+        'Ken': {
+            'top': 'Ken (Klemen Kuri)',
+            'sup': 'Ken'
+        },
+        'Alien': {
+            'mid': 'Alien (Pavel Yotov)'
+        },
+        'Pat': 'Pat (Lee Seung-yong)',
+        'Kiddo': 'Kiddo (Swiss Player)',
+        'Hunt': 'Hunt (Albert Jahn)',
+        'Instinct': 'Instinct (Tony Ng)',
+        'Zzk': 'Zzk (Kwon Hee-won)',
+        'scary': 'Scary (Artur Queiroz)',
+        'Speedy': 'Speedy (George Daniel Savu)',
+        'Rusty': 'Rusty (Emanuel Souza)',
+        'Trace': 'Trace (Mehmet Azemi)',
+        'r0bbed': 'R0bbed'
     }
 
     if playerName in namesMapping:
@@ -560,7 +626,6 @@ def getPlayerURL(playerName, role):
             return namesMapping[playerName][role]
 
     return playerName
-
 
 def crawlerPlayerInfos(playerName, playingChampion, startDate, endDate, game, role):
     gp = 0
@@ -579,7 +644,7 @@ def crawlerPlayerInfos(playerName, playingChampion, startDate, endDate, game, ro
         "https://oracleselixir.com/player/{}/championPool".format(playerName))
 
     # Aguardando carregamento da página e exibição do input de Start Date
-    wait = WebDriverWait(driver, 10)
+    wait = WebDriverWait(driver, 20)
     try:
         start_date_input = wait.until(ec.presence_of_element_located(
             (By.XPATH, '//*[@id="start_date"]')), message='Campo "Start Date" era esperado na busca do jogador {} e não foi encontrado.'.format(playerName))
@@ -597,8 +662,7 @@ def crawlerPlayerInfos(playerName, playingChampion, startDate, endDate, game, ro
     start_date_input.send_keys(endDate)
 
     # Aguardando carregamento da página e exibição dos resultados
-    table_header = wait.until(ec.presence_of_element_located(
-        (By.XPATH, "//*[name()='svg' and @data-icon='arrows-alt-v']")), message='A tabela de campeões era esperada pro jogador {} e não foi encontrada.'.format(playerName))
+    time.sleep(10)
 
     if (len(driver.find_elements(by=By.XPATH, value="//*[text()=\"{}\"]/following::div/following::div".format(playingChampion))) != 0):
         # Obtendo valores de GP, W% e KDA
@@ -617,7 +681,6 @@ def crawlerPlayerInfos(playerName, playingChampion, startDate, endDate, game, ro
     driver.quit()
 
     return gp, wr, kda
-
 
 def processGames(game):
     
@@ -848,11 +911,6 @@ header = 'game,blueTopGP,blueTopWR,blueTopKDA,blueJungleGP,blueJungleWR,blueJung
 with open('../data/crawler/players_statistics.csv', mode='a') as dataset:
     dataset.write(header)
 
-def set_up_threads(gamesToProcess):
-    with ThreadPoolExecutor(max_workers=2) as executor:
-        return executor.map(processGames,    
-                            gamesToProcess,
-                            timeout = 60)
-
-if __name__ == "__main__":
-    set_up_threads(gamesToProcess)
+for game in tqdm(gamesToProcess):
+    if isinstance(game, str):
+        processGames(game)
