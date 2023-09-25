@@ -9,9 +9,9 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as ec
 
 
-df = pd.read_csv("../data/crawler/crawler-input.csv")
+df = pd.read_csv("../data/crawler/crawler-input-2023.csv")
 games = df.golId.drop_duplicates().dropna().apply(int).tolist()
-processed_df = pd.read_csv("../data/crawler/crawler-output.csv")
+processed_df = pd.read_csv("../data/crawler/crawler-output-2023.csv")
 processed_games = processed_df.golId.drop_duplicates().tolist()
 remaining_games = set(games) - set(processed_games)
 
@@ -128,7 +128,7 @@ def processGames(game):
             events[event_counter] = result_str
             event_counter += 1
 
-        with open('../data/crawler/crawler-output.csv', mode='a', newline="") as dataset:
+        with open('../data/crawler/crawler-output-2023.csv', mode='a', newline="") as dataset:
             datasetWriter = csv.writer(dataset, delimiter=',')
             datasetWriter.writerow(events)
             

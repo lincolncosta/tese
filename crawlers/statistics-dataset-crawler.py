@@ -238,7 +238,7 @@ def processGames(game):
                 & (df['position'] == 'sup')].result.values[0]
 
     # WRITING TO DATASET FILE
-    with open('../data/crawler/players_statistics.csv', mode='a', newline="") as dataset2021:
+    with open('../data/crawler/players_statistics-2023.csv', mode='a', newline="") as dataset2021:
         datasetWriter = csv.writer(dataset2021, delimiter=',')
         datasetWriter.writerow([game, blueTopGP, blueTopWR, blueTopKDA, blueJungleGP, blueJungleWR, blueJungleKDA, blueMidGP, blueMidWR, blueMidKDA, blueCarryGP, blueCarryWR, blueCarryKDA, blueSuppGP, blueSuppWR,
                                 blueSuppKDA, redTopGP, redTopWR, redTopKDA, redJungleGP, redJungleWR, redJungleKDA, redMidGP, redMidWR, redMidKDA, redCarryGP, redCarryWR, redCarryKDA, redSuppGP, redSuppWR, redSuppKDA, result])
@@ -248,11 +248,11 @@ def diff(list1, list2):
     d = set(list1).intersection(set(list2))  # or d = set(list1) & set(list2)
     return list(c - d)
 
-df = pd.read_csv("../data/raw.csv")
+df = pd.read_csv("../data/raw-2023.csv")
 df_champions = pd.read_csv('../data/champions.csv')
-statistics_df = pd.read_csv("../data/crawler/players_statistics.csv")
-events_output_df = pd.read_csv("../data/crawler/crawler-output.csv")
-events_input_df = pd.read_csv("../data/crawler/crawler-input.csv")
+statistics_df = pd.read_csv("../data/crawler/players_statistics-2023.csv")
+events_output_df = pd.read_csv("../data/crawler/crawler-output-2023.csv")
+events_input_df = pd.read_csv("../data/crawler/crawler-input-2023.csv")
 
 processedGameIds = statistics_df.game.drop_duplicates().to_list()
 unprocessedGameIds = []
@@ -268,7 +268,7 @@ for index, row in events_output_df.iterrows():
 gamesToProcess = diff(processedGameIds, unprocessedGameIds)
 
 header = 'game,blueTopGP,blueTopWR,blueTopKDA,blueJungleGP,blueJungleWR,blueJungleKDA,blueMidGP,blueMidWR,blueMidKDA,blueADCGP,blueADCWR,blueADCKDA,blueSupportGP,blueSupportWR,blueSupportKDA,redTopGP,redTopWR,redTopKDA,redJungleGP,redJungleWR,redJungleKDA,redMidGP,redMidWR,redMidKDA,redAdcGP,redAdcWR,redAdcKDA,redSupportGP,redSupportWR,redSupportKDA,result\n'
-with open('../data/crawler/players_statistics.csv', mode='a') as dataset:
+with open('../data/crawler/players_statistics-2023.csv', mode='a') as dataset:
     dataset.write(header)
 
 for game in tqdm(gamesToProcess):
