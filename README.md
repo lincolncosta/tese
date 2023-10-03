@@ -12,3 +12,4 @@ Geração do dataset
 8. Crie um arquivo players_statistics-2023.csv
 9. Execute o arquivo crawlers/statistics-dataset-crawler.py Ele preencherá o arquivo players_statistics-2023.csv.
 10. Crie um arquivo unified-events-statistics-2023.csv
+11. Execute o arquivo crawlers/unify-events-statistics-datasets.py Ele preencherá o arquivo unified-events-statistics-2023.csv.
