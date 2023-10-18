@@ -7,7 +7,7 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as ec
-
+from selenium.webdriver.chrome.service import Service
 
 df = pd.read_csv("../data/crawler/crawler-input-2023.csv")
 games = df.golId.drop_duplicates().dropna().apply(int).tolist()
@@ -65,14 +65,15 @@ def processGames(game):
     
     if game != 'nan':
         game = str(game)
-        chrome_path = r'../dependency/chromedriver'
+        chrome_path = r'../dependency/chromedriver.exe'
         options = webdriver.ChromeOptions()
-        options.headless = True
+        options.add_argument("--headless=new")
         user_agent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.50 Safari/537.36'
         options.add_experimental_option('excludeSwitches', ['enable-logging'])
         options.add_argument('window-size=1400,600')
         options.add_argument(f'user-agent={user_agent}')
-        driver = webdriver.Chrome(executable_path=chrome_path, options=options)
+        service = Service(executable_path=chrome_path)
+        driver = webdriver.Chrome(service=service, options=options)
         driver.get(
             "https://gol.gg/game/stats/{}/page-timeline/".format(game))
 
@@ -81,16 +82,16 @@ def processGames(game):
         wait = WebDriverWait(driver, 10)
         events_table = wait.until(ec.presence_of_element_located((By.CLASS_NAME, 'timeline')), message=msg)        
         rows = events_table.find_elements(By.TAG_NAME, "tr")
-        events = [game, '', '', '', '', '', '', '', '', '', '', '','', '', '', '', '', '', '', '', '', '','', '', '', '', '', '', '', '', '', '','', '', '', '', '', '', '', '', '', '', '', '', '', '']
+        events = [game, '', '', '', '', '', '', '', '', '', '', '','', '', '', '', '', '', '', '', '', '','', '', '', '', '', '', '', '', '', '','', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '','', '', '', '', '', '', '', '', '', '','', '', '', '', '', '', '', '', '', '','', '', '', '', '', '', '', '', '', '', '', '', '', '']
         event_counter = 1
         has_first_blood = False
 
-        for index, row in enumerate(rows):            
-
+        for index, row in enumerate(rows):
             # skipping first row (header)
             if index == 0:
                 continue
 
+            time = row.find_elements(By.TAG_NAME, "td")[0]
             side = row.find_elements(By.TAG_NAME, "td")[1]
             side_img = side.find_elements(By.CLASS_NAME, "champion_icon_light")[0]
             action = row.find_elements(By.TAG_NAME, "td")[4]
@@ -127,6 +128,7 @@ def processGames(game):
                 result_str += formatted_target
 
             events[event_counter] = result_str
+            events[event_counter + 45] = time.text
             event_counter += 1
 
         with open('../data/crawler/crawler-output-2023.csv', mode='a', newline="") as dataset:
