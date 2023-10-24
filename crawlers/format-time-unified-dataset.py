@@ -42,6 +42,32 @@ ordem_colunas = ['BLUE:first_blood',
     'RED:nexus_tower',
     'RED:nexus']
 
+pontuacao_dict = {
+    'first_blood': 300,
+    'dragon': 500,
+    'herald': 350,
+    'first_tower_top': 250,
+    'first_tower_mid': 250,
+    'first_tower_bot': 250,
+    'second_tower_top': 400,
+    'second_tower_mid': 400,
+    'second_tower_bot': 400,
+    'third_tower_top': 500,
+    'third_tower_mid': 500,
+    'third_tower_bot': 500,    
+    'inhibitor_top': 500,
+    'inhibitor_mid': 500,
+    'inhibitor_bot': 500,
+    'baron': 500,
+    'elder_dragon': 500,
+    'nexus_tower': 500,
+    'nexus': 1000
+}
+
+def calcula_pontuacao_time(pontuacao_atual, evento):
+     return int(pontuacao_atual) + int(pontuacao_dict.get(evento))
+
+
 for index, row in tqdm(df.iterrows(), total=len(df)):
   
     result = row['result']
@@ -51,6 +77,8 @@ for index, row in tqdm(df.iterrows(), total=len(df)):
         eventos = []
         contagem = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
         duracao_min = row['duracao_min']
+        redPontuacaoObjetivos = 0
+        bluePontuacaoObjetivos = 0
 
         # Se a partida já estiver finalizada nessa iteração, vai para a próxima partida
         if time_considered > duracao_min:
@@ -62,6 +90,11 @@ for index, row in tqdm(df.iterrows(), total=len(df)):
 
             # Verificar se o evento aconteceu antes de "time_considered" minutos
             if pd.notna(row[tempo]) and row[tempo] <= time_considered:
+                if 'RED' in row[evento]:
+                    redPontuacaoObjetivos = calcula_pontuacao_time(redPontuacaoObjetivos, row[evento].replace(' ', '').split(':')[1])
+                else:
+                    bluePontuacaoObjetivos = calcula_pontuacao_time(bluePontuacaoObjetivos, row[evento].replace(' ', '').split(':')[1]) 
+                
                 eventos.append(row[evento].replace(' ', ''))
 
                 # Criar um DataFrame com base na lista de colunas
@@ -104,7 +137,7 @@ for index, row in tqdm(df.iterrows(), total=len(df)):
         redSupportWR = row['redSupportWR']
         redSupportKDA = row['redSupportKDA']
         
-        features = [golId,time,result,blueTopGP,blueTopWR,blueTopKDA,blueJungleGP,blueJungleWR,blueJungleKDA,blueMidGP,blueMidWR,blueMidKDA,blueADCGP,blueADCWR,blueADCKDA,blueSupportGP,blueSupportWR,blueSupportKDA,redTopGP,redTopWR,redTopKDA,redJungleGP,redJungleWR,redJungleKDA,redMidGP,redMidWR,redMidKDA,redAdcGP,redAdcWR,redAdcKDA,redSupportGP,redSupportWR,redSupportKDA]
+        features = [golId,time,result,blueTopGP,blueTopWR,blueTopKDA,blueJungleGP,blueJungleWR,blueJungleKDA,blueMidGP,blueMidWR,blueMidKDA,blueADCGP,blueADCWR,blueADCKDA,blueSupportGP,blueSupportWR,blueSupportKDA,bluePontuacaoObjetivos,redTopGP,redTopWR,redTopKDA,redJungleGP,redJungleWR,redJungleKDA,redMidGP,redMidWR,redMidKDA,redAdcGP,redAdcWR,redAdcKDA,redSupportGP,redSupportWR,redSupportKDA, redPontuacaoObjetivos]
         features.extend(contagem)
 
         with open('../data/crawler/unified-events-time-statistics.csv', mode='a', newline="") as dataset:            
