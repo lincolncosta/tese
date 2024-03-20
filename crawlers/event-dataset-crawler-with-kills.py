@@ -31,6 +31,7 @@ def getFormattedAction(img_src):
         'https://gol.gg/_img/nexus-icon.png': 'nexus',
         'https://gol.gg/_img/inhib-icon.png': 'need_target',
         'https://gol.gg/_img/tower-icon.png': 'need_target',
+        'https://gol.gg/_img/voidgrubs-icon.png': 'voidgrub',
     }
 
     if img_src in actionMapping:

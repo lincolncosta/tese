@@ -43,10 +43,12 @@ def getPlayerPerformance(playerName, playerChampion, formatedStartDate, formated
         return gp, wr, kda
 
 def processGames(game):
+    analyzed_df = df[df['gameid'] == game]['date']
+
+    if analyzed_df.empty:
+        return
     
-    # GAME DATETIME
-    endDate = dt.strptime(
-        df[(df['gameid'] == game)].date.values[0], '%Y-%m-%d %H:%M:%S')
+    endDate = dt.strptime(analyzed_df.iloc[0], '%Y-%m-%d %H:%M:%S')
     startDate = endDate - relativedelta(months=6)    
     formatedEndDate = "{}-{:02d}-{:02d}".format(
         endDate.year, endDate.month, endDate.day - 1)
@@ -61,9 +63,9 @@ def processGames(game):
     if (blueTopPlayer != 'unknown player'):
         crawler = getPlayerPerformance(
             blueTopPlayer, blueTop, formatedStartDate, formatedEndDate, 'top')
-        blueTop = int(
-            df_champions.loc[df_champions['id'] == blueTop]['key'])
+        blueTop = int(df_champions.loc[df_champions['id'] == blueTop]['key'].iloc[0])
         if (crawler):
+            blueTopChampion = df[(df['gameid'] == game) & (df['side'] == 'Blue') & (df['position'] == 'top')].champion.values[0]
             blueTopGP = crawler[0]
             blueTopWR = crawler[1]
             blueTopKDA = crawler[2]
@@ -82,6 +84,7 @@ def processGames(game):
         blueJungle = int(
             df_champions.loc[df_champions['id'] == blueJungle]['key'])
         if (crawler):
+            blueJungleChampion = df[(df['gameid'] == game) & (df['side'] == 'Blue') & (df['position'] == 'jng')].champion.values[0]
             blueJungleGP = crawler[0]
             blueJungleWR = crawler[1]
             blueJungleKDA = crawler[2]
@@ -100,6 +103,7 @@ def processGames(game):
         blueMid = int(
             df_champions.loc[df_champions['id'] == blueMid]['key'])
         if (crawler):
+            blueMidChampion = df[(df['gameid'] == game) & (df['side'] == 'Blue') & (df['position'] == 'mid')].champion.values[0]
             blueMidGP = crawler[0]
             blueMidWR = crawler[1]
             blueMidKDA = crawler[2]
@@ -118,6 +122,7 @@ def processGames(game):
         blueCarry = int(
             df_champions.loc[df_champions['id'] == blueCarry]['key'])
         if (crawler):
+            blueCarryChampion = df[(df['gameid'] == game) & (df['side'] == 'Blue') & (df['position'] == 'bot')].champion.values[0]
             blueCarryGP = crawler[0]
             blueCarryWR = crawler[1]
             blueCarryKDA = crawler[2]
@@ -136,6 +141,7 @@ def processGames(game):
         blueSupp = int(
             df_champions.loc[df_champions['id'] == blueSupp]['key'])
         if (crawler):
+            blueSuppChampion = df[(df['gameid'] == game) & (df['side'] == 'Blue') & (df['position'] == 'sup')].champion.values[0]
             blueSuppGP = crawler[0]
             blueSuppWR = crawler[1]
             blueSuppKDA = crawler[2]
@@ -154,6 +160,7 @@ def processGames(game):
             redTopPlayer, redTop, formatedStartDate, formatedEndDate, 'top')
         redTop = int(df_champions.loc[df_champions['id'] == redTop]['key'])
         if (crawler):
+            redTopChampion = df[(df['gameid'] == game) & (df['side'] == 'Red') & (df['position'] == 'top')].champion.values[0]
             redTopGP = crawler[0]
             redTopWR = crawler[1]
             redTopKDA = crawler[2]
@@ -172,6 +179,7 @@ def processGames(game):
         redJungle = int(
             df_champions.loc[df_champions['id'] == redJungle]['key'])
         if (crawler):
+            redJungleChampion = df[(df['gameid'] == game) & (df['side'] == 'Red') & (df['position'] == 'jng')].champion.values[0]
             redJungleGP = crawler[0]
             redJungleWR = crawler[1]
             redJungleKDA = crawler[2]
@@ -189,6 +197,7 @@ def processGames(game):
             redMidPlayer, redMid, formatedStartDate, formatedEndDate, 'mid')
         redMid = int(df_champions.loc[df_champions['id'] == redMid]['key'])
         if (crawler):
+            redMidChampion = df[(df['gameid'] == game) & (df['side'] == 'Red') & (df['position'] == 'mid')].champion.values[0]
             redMidGP = crawler[0]
             redMidWR = crawler[1]
             redMidKDA = crawler[2]
@@ -207,6 +216,7 @@ def processGames(game):
         redCarry = int(
             df_champions.loc[df_champions['id'] == redCarry]['key'])
         if (crawler):
+            redCarryChampion = df[(df['gameid'] == game) & (df['side'] == 'Red') & (df['position'] == 'bot')].champion.values[0]
             redCarryGP = crawler[0]
             redCarryWR = crawler[1]
             redCarryKDA = crawler[2]
@@ -225,6 +235,7 @@ def processGames(game):
         redSupp = int(
             df_champions.loc[df_champions['id'] == redSupp]['key'])
         if (crawler):
+            redSuppChampion = df[(df['gameid'] == game) & (df['side'] == 'Red') & (df['position'] == 'sup')].champion.values[0]
             redSuppGP = crawler[0]
             redSuppWR = crawler[1]
             redSuppKDA = crawler[2]
@@ -238,21 +249,21 @@ def processGames(game):
                 & (df['position'] == 'sup')].result.values[0]
 
     # WRITING TO DATASET FILE
-    with open('../data/crawler/players_statistics-2023.csv', mode='a', newline="") as dataset2021:
+    with open('../data/crawler/players_statistics.csv', mode='a', newline="") as dataset2021:
         datasetWriter = csv.writer(dataset2021, delimiter=',')
-        datasetWriter.writerow([game, blueTopGP, blueTopWR, blueTopKDA, blueJungleGP, blueJungleWR, blueJungleKDA, blueMidGP, blueMidWR, blueMidKDA, blueCarryGP, blueCarryWR, blueCarryKDA, blueSuppGP, blueSuppWR,
-                                blueSuppKDA, redTopGP, redTopWR, redTopKDA, redJungleGP, redJungleWR, redJungleKDA, redMidGP, redMidWR, redMidKDA, redCarryGP, redCarryWR, redCarryKDA, redSuppGP, redSuppWR, redSuppKDA, result])
+        datasetWriter.writerow([game, blueTopChampion, blueTopGP, blueTopWR, blueTopKDA, blueJungleChampion, blueJungleGP, blueJungleWR, blueJungleKDA, blueMidChampion, blueMidGP, blueMidWR, blueMidKDA, blueCarryChampion, blueCarryGP, blueCarryWR, blueCarryKDA, blueSuppChampion, blueSuppGP, blueSuppWR,
+                                blueSuppKDA, redTopChampion, redTopGP, redTopWR, redTopKDA, redJungleChampion, redJungleGP, redJungleWR, redJungleKDA, redMidChampion, redMidGP, redMidWR, redMidKDA, redCarryChampion, redCarryGP, redCarryWR, redCarryKDA, redSuppChampion, redSuppGP, redSuppWR, redSuppKDA, result])
 
 def diff(list1, list2):
     c = set(list1).union(set(list2))  # or c = set(list1) | set(list2)
     d = set(list1).intersection(set(list2))  # or d = set(list1) & set(list2)
     return list(c - d)
 
-df = pd.read_csv("../data/raw-2023.csv")
+df = pd.read_csv("../data/raw-2024.csv")
 df_champions = pd.read_csv('../data/champions.csv')
-statistics_df = pd.read_csv("../data/crawler/players_statistics-2023.csv")
-events_output_df = pd.read_csv("../data/crawler/crawler-output-2023.csv")
-events_input_df = pd.read_csv("../data/crawler/crawler-input-2023.csv")
+statistics_df = pd.read_csv("../data/crawler/players_statistics.csv")
+events_output_df = pd.read_csv("../data/crawler/crawler-output-with-kills.csv")
+events_input_df = pd.read_csv("../data/crawler/crawler-input.csv")
 
 processedGameIds = statistics_df.game.drop_duplicates().to_list()
 unprocessedGameIds = []
@@ -266,9 +277,9 @@ for index, row in events_output_df.iterrows():
         unprocessedGameIds.append(game)
 
 gamesToProcess = diff(processedGameIds, unprocessedGameIds)
-
-header = 'game,blueTopGP,blueTopWR,blueTopKDA,blueJungleGP,blueJungleWR,blueJungleKDA,blueMidGP,blueMidWR,blueMidKDA,blueADCGP,blueADCWR,blueADCKDA,blueSupportGP,blueSupportWR,blueSupportKDA,redTopGP,redTopWR,redTopKDA,redJungleGP,redJungleWR,redJungleKDA,redMidGP,redMidWR,redMidKDA,redAdcGP,redAdcWR,redAdcKDA,redSupportGP,redSupportWR,redSupportKDA,result\n'
-with open('../data/crawler/players_statistics-2023.csv', mode='a') as dataset:
+print(gamesToProcess)
+header = 'game,blueTopChampion,blueTopGP,blueTopWR,blueTopKDA,blueJungleChampion,blueJungleGP,blueJungleWR,blueJungleKDA,blueMidChampion,blueMidGP,blueMidWR,blueMidKDA,blueADCChampion,blueADCGP,blueADCWR,blueADCKDA,blueSupportChampion,blueSupportGP,blueSupportWR,blueSupportKDA,redTopChampion,redTopGP,redTopWR,redTopKDA,redJungleChampion,redJungleGP,redJungleWR,redJungleKDA,redMidChampion,redMidGP,redMidWR,redMidKDA,redAdcChampion,redAdcGP,redAdcWR,redAdcKDA,redSupportChampion,redSupportGP,redSupportWR,redSupportKDA,result\n'
+with open('../data/crawler/players_statistics.csv', mode='a') as dataset:
     dataset.write(header)
 
 for game in tqdm(gamesToProcess):

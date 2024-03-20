@@ -31,6 +31,7 @@ def getFormattedAction(img_src):
         'https://gol.gg/_img/nexus-icon.png': 'nexus',
         'https://gol.gg/_img/inhib-icon.png': 'need_target',
         'https://gol.gg/_img/tower-icon.png': 'need_target',
+        'https://gol.gg/_img/voidgrubs-icon.png': 'voidgrub',
     }
 
     if img_src in actionMapping:
@@ -63,79 +64,80 @@ def getFormattedTarget(target_text):
 
 def processGames(game):
     
-    if game != 'nan':
-        game = str(game)
-        chrome_path = r'../dependency/chromedriver.exe'
-        options = webdriver.ChromeOptions()
-        options.add_argument("--headless=new")
-        user_agent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.50 Safari/537.36'
-        options.add_experimental_option('excludeSwitches', ['enable-logging'])
-        options.add_argument('window-size=1400,600')
-        options.add_argument(f'user-agent={user_agent}')
-        service = Service(executable_path=chrome_path)
-        driver = webdriver.Chrome(service=service, options=options)
-        driver.get(
-            "https://gol.gg/game/stats/{}/page-timeline/".format(game))
+    game = str(game)
+    if '.' in game:
+        game = game.split('.')[0]
+    chrome_path = r'../dependency/chromedriver.exe'
+    options = webdriver.ChromeOptions()
+    options.add_argument("--headless=new")
+    user_agent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.50 Safari/537.36'
+    options.add_experimental_option('excludeSwitches', ['enable-logging'])
+    options.add_argument('window-size=1400,600')
+    options.add_argument(f'user-agent={user_agent}')
+    options.add_argument('--ignore-certificate-errors')
+    service = Service(executable_path=chrome_path)
+    driver = webdriver.Chrome(service=service, options=options)
+    driver.get(
+        "https://gol.gg/game/stats/{}/page-timeline/".format(game))
 
-        # waiting page load
-        msg = 'Tabela de eventos era esperada na partida {} e não foi encontrado.'.format(game)
-        wait = WebDriverWait(driver, 10)
-        events_table = wait.until(ec.presence_of_element_located((By.CLASS_NAME, 'timeline')), message=msg)        
-        rows = events_table.find_elements(By.TAG_NAME, "tr")
-        events = [game, '', '', '', '', '', '', '', '', '', '', '','', '', '', '', '', '', '', '', '', '','', '', '', '', '', '', '', '', '', '','', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '','', '', '', '', '', '', '', '', '', '','', '', '', '', '', '', '', '', '', '','', '', '', '', '', '', '', '', '', '', '', '', '', '']
-        event_counter = 1
-        has_first_blood = False
+    # waiting page load
+    msg = 'Tabela de eventos era esperada na partida {} e não foi encontrado.'.format(game)
+    wait = WebDriverWait(driver, 10)
+    events_table = wait.until(ec.presence_of_element_located((By.CLASS_NAME, 'timeline')), message=msg)        
+    rows = events_table.find_elements(By.TAG_NAME, "tr")
+    events = [game, '', '', '', '', '', '', '', '', '', '', '','', '', '', '', '', '', '', '', '', '','', '', '', '', '', '', '', '', '', '','', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '','', '', '', '', '', '', '', '', '', '','', '', '', '', '', '', '', '', '', '','', '', '', '', '', '', '', '', '', '', '', '', '', '']
+    event_counter = 1
+    has_first_blood = False
 
-        for index, row in enumerate(rows):
-            # skipping first row (header)
-            if index == 0:
-                continue
+    for index, row in enumerate(rows):
+        # skipping first row (header)
+        if index == 0:
+            continue
 
-            time = row.find_elements(By.TAG_NAME, "td")[0]
-            side = row.find_elements(By.TAG_NAME, "td")[1]
-            side_img = side.find_elements(By.CLASS_NAME, "champion_icon_light")[0]
-            action = row.find_elements(By.TAG_NAME, "td")[4]
-            action_img = action.find_elements(By.CLASS_NAME, "champion_icon_light")
+        time = row.find_elements(By.TAG_NAME, "td")[0]
+        side = row.find_elements(By.TAG_NAME, "td")[1]
+        side_img = side.find_elements(By.CLASS_NAME, "champion_icon_light")[0]
+        action = row.find_elements(By.TAG_NAME, "td")[4]
+        action_img = action.find_elements(By.CLASS_NAME, "champion_icon_light")
 
-            # skipping empty actions
-            if (len(action_img)) == 0:
-                continue
+        # skipping empty actions
+        if (len(action_img)) == 0:
+            continue
 
-            action_img = action_img[0]
-            # skipping kills events
-            if 'kill-icon' in action_img.get_attribute("src") and has_first_blood:
-                continue
+        action_img = action_img[0]
+        # skipping kills events
+        if 'kill-icon' in action_img.get_attribute("src") and has_first_blood:
+            continue
 
-            
-            target = row.find_elements(By.TAG_NAME, "td")[6]
+        
+        target = row.find_elements(By.TAG_NAME, "td")[6]
 
-            result_str = ''
+        result_str = ''
 
-            if('blue' in side_img.get_attribute("src")):
-                result_str += 'BLUE: '
-            else:
-                result_str += 'RED: '
+        if('blue' in side_img.get_attribute("src")):
+            result_str += 'BLUE: '
+        else:
+            result_str += 'RED: '
 
-            formatted_action = getFormattedAction(action_img.get_attribute("src"))
+        formatted_action = getFormattedAction(action_img.get_attribute("src"))
 
-            if(formatted_action == 'first_blood'):
-                has_first_blood = True
+        if(formatted_action == 'first_blood'):
+            has_first_blood = True
 
-            if(formatted_action != 'need_target'):
-                result_str += formatted_action
-            else:
-                formatted_target = getFormattedTarget(target.text)
-                result_str += formatted_target
+        if(formatted_action != 'need_target'):
+            result_str += formatted_action
+        else:
+            formatted_target = getFormattedTarget(target.text)
+            result_str += formatted_target
 
-            events[event_counter] = result_str
-            events[event_counter + 45] = time.text
-            event_counter += 1
+        events[event_counter] = result_str
+        events[event_counter + 45] = time.text
+        event_counter += 1
 
-        with open('../data/crawler/crawler-output.csv', mode='a', newline="") as dataset:
-            datasetWriter = csv.writer(dataset, delimiter=',')
-            datasetWriter.writerow(events)
+    with open('../data/crawler/crawler-output.csv', mode='a', newline="") as dataset:
+        datasetWriter = csv.writer(dataset, delimiter=',')
+        datasetWriter.writerow(events)
             
 
 for game in tqdm(remaining_games):
-    game = int(game)
     processGames(game)
